@@ -18,7 +18,7 @@ def parse_hosts_file():
     return hosts_entries
 
 def write_host_to_hosts_file(ip, hostname):
-    with open('/etc/hosts', 'w') as hosts_file:
+    with open('/etc/hosts', 'a') as hosts_file:
         hosts_file.write(f"{ip} {hostname}")
 
 
