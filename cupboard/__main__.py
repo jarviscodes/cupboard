@@ -32,6 +32,8 @@ def inithost(boxname: str, ip_address: str):
         host_status_string = "[red]offline[/red]"
     console.print(f"Host [bold cyan]{initial_hostname}[/] appears {host_status_string}.")
     console.print(f"Opened ports: [bold yellow]{', '.join([str(port) for port in open_ports])}[/]")
+
+    console.print("[bold cyan][underline]Hosts file check[/bold cyan][/underline]:")
     hosts_file_contents = parse_hosts_file()
 
     for key in hosts_file_contents.keys():
