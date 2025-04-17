@@ -17,6 +17,10 @@ def parse_hosts_file():
                 print(f"IP: {ip}, Hostnames: {hostnames}")
     return hosts_entries
 
+def write_host_to_hosts_file(ip, hostname):
+    with open('/etc/hosts', 'w') as hosts_file:
+        hosts_file.write(f"{ip} {hostname}")
+
 
 def validate_ip(ip_string):
     try:
