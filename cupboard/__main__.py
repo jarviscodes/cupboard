@@ -33,12 +33,19 @@ def inithost(boxname: str, ip_address: str):
     console.print(f"Host [bold cyan]{initial_hostname}[/] appears {host_status_string}.")
     console.print(f"Opened ports: [bold yellow]{', '.join([str(port) for port in open_ports])}[/]")
     hosts_file_contents = parse_hosts_file()
+
     for key in hosts_file_contents.keys():
         if key == ip_address:
-            console.print(f"{ip_address} already in [bold yellow]/etc/hosts[/] with name(s): {','.join(hosts_file_contents[key])}[/]")
-        else:
-            write_host_to_hosts_file(ip_address, initial_hostname)
-            console.print(f"Added [bold cyan]{ip_address}[/] to [bold yellow]/etc/hosts[/] with name: [bold cyan]{initial_hostname}[/]")
+            already_in_file = True
+            break
+        already_in_file = False
+
+    if already_in_file:
+        console.print(
+            f"{ip_address} already in [bold yellow]/etc/hosts[/] with name(s): {','.join(hosts_file_contents[key])}[/]")
+    else:
+        write_host_to_hosts_file(ip_address, initial_hostname)
+        console.print(f"Added [bold cyan]{ip_address}[/] to [bold yellow]/etc/hosts[/] with name: [bold cyan]{initial_hostname}[/]")
 
 @app.command()
 def webmap():
