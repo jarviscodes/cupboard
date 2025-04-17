@@ -3,11 +3,20 @@ import socket
 from collections import defaultdict
 
 def parse_hosts_file():
-    hosts_entries = []
+    hosts_entries = defaultdict(list)
     with open('/etc/hosts', 'r') as hosts_file:
-        for line in hosts_file:
+        for line in hosts_file.readlines():
             line = line.strip()
-            print(line)
+            # don't take comments or empty lines
+            if not line.startswith('#') and not len(line) == 0:
+                # format is "ip hostname [hostname ...]"
+                ip, *hostnames = line.split(" ")
+                # some lines might be split with multiple spaces, cleanup
+                hostnames = [hostname for hostname in hostnames if len(hostname) > 0]
+                hosts_entries[ip] = hostnames
+                print(f"IP: {ip}, Hostnames: {hostnames}")
+    return hosts_entries
+
 
 def validate_ip(ip_string):
     try:
