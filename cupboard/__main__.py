@@ -42,7 +42,7 @@ def inithost(boxname: str, ip_address: str):
 
     if already_in_file:
         console.print(
-            f"{ip_address} already in [bold yellow]/etc/hosts[/] with name(s): {','.join(hosts_file_contents[key])}[/]")
+            f"{ip_address} already in [bold yellow]/etc/hosts[/] with name(s): [bold cyan]{','.join(hosts_file_contents[key])}[/]")
     else:
         write_host_to_hosts_file(ip_address, initial_hostname)
         console.print(f"Added [bold cyan]{ip_address}[/] to [bold yellow]/etc/hosts[/] with name: [bold cyan]{initial_hostname}[/]")

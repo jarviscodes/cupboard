@@ -14,7 +14,6 @@ def parse_hosts_file():
                 # some lines might be split with multiple spaces, cleanup
                 hostnames = [hostname for hostname in hostnames if len(hostname) > 0]
                 hosts_entries[ip] = hostnames
-                print(f"IP: {ip}, Hostnames: {hostnames}")
     return hosts_entries
 
 def write_host_to_hosts_file(ip, hostname):
