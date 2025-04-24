@@ -3,6 +3,7 @@ import typer
 from rich.console import Console
 from bs4 import BeautifulSoup
 from cupboard.utils import parse_hosts_file, validate_ip, online_sanity_check, write_host_to_hosts_file
+from tqdm import tqdm
 
 console = Console()
 verbose = True
@@ -80,10 +81,12 @@ def webmap(port: int, vhost:str, subdomain_enum: bool, directory_enum: bool):
         wordlist = []
         with open('/usr/share/seclists/Discovery/Web-Content/directory-list-lowercase-2.3-small.txt', 'r') as _wl:
             wordlist = [line.strip() for line in _wl.readlines() if not line.startswith("#") and not len(line.strip()) == 0]
-        console.print("[bold cyan][underline]VHost enumeration:[/bold cyan][/underline]:")
+        console.print("[bold cyan][underline]VHost enumeration:[/bold cyan][/underline]")
         with requests.Session() as session:
             valid_subdomains = []
-            for word in wordlist:
+            twordlist = tqdm(wordlist)
+            for word in twordlist:
+                twordlist.set_description(f"Processing {word}")
                 session.headers = {"Host": f"{word}.{vhost}"}
                 response = session.get(f"http://{vhost}", allow_redirects=False)
                 if response.status_code == 200:
