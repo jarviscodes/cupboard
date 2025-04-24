@@ -85,7 +85,7 @@ def webmap(port: int, vhost:str, subdomain_enum: bool, directory_enum: bool):
             valid_subdomains = []
             for word in wordlist:
                 session.headers = {"Host": f"{word}.{vhost}"}
-                response = session.get(f"http://{vhost}")
+                response = session.get(f"http://{vhost}", allow_redirects=False)
                 if response.status_code == 200:
                     valid_subdomains.append(f"{word}.{vhost}")
                     console.print(f"[bold green]{word}.{vhost}[/]")
