@@ -54,7 +54,7 @@ def passive_crawl(host):
     with requests.Session() as session:
         resp_robot = session.get("http://" + host + "/robots.txt")
         resp_git = session.get("http://" + host + "/.git")
-        resp_webpage = session.get(host)
+        resp_webpage = session.get("http://" + host)
 
     if resp_robot.status_code == 200:
         console.print("Found Robots.txt: ")
