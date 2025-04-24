@@ -79,7 +79,7 @@ def webmap(port: int, vhost:str, subdomain_enum: bool, directory_enum: bool):
     if subdomain_enum or directory_enum:
         wordlist = []
         with open('/usr/share/seclists/Discovery/Web-Content/directory-list-lowercase-2.3-small.txt', 'r') as _wl:
-            wordlist = [line for line in _wl.readlines() if not line.startswith("#")]
+            wordlist = [line.strip() for line in _wl.readlines() if not line.startswith("#") and not len(line.strip()) == 0]
         console.print("[bold cyan][underline]VHost enumeration:[/bold cyan][/underline]:")
         with requests.Session() as session:
             valid_subdomains = []
