@@ -1,6 +1,7 @@
+import requests
 import typer
 from rich.console import Console
-
+from bs4 import BeautifulSoup
 from cupboard.utils import parse_hosts_file, validate_ip, online_sanity_check, write_host_to_hosts_file
 
 console = Console()
@@ -49,9 +50,32 @@ def inithost(boxname: str, ip_address: str):
         write_host_to_hosts_file(ip_address, initial_hostname)
         console.print(f"Added [bold cyan]{ip_address}[/] to [bold yellow]/etc/hosts[/] with name: [bold cyan]{initial_hostname}[/]")
 
+def passive_crawl(host):
+    with requests.Session() as session:
+        resp_robot = session.get(host + "/robots.txt")
+        resp_git = session.get(host + "/.git")
+        resp_webpage = session.get(host)
+
+    if resp_robot.status_code == 200:
+        console.print("Found Robots.txt: ")
+        console.print(resp_robot.text)
+    if resp_git.status_code == 200:
+        console.print("Found .git directory, dump this with gitdumper!")
+
+    webpage_text = resp_webpage.text
+    webpage_soup = BeautifulSoup(webpage_text, "html.parser")
+    if webpage_soup:
+        all_links = webpage_soup.find_all("a")
+        for link in all_links:
+            console.print(link.get("href"))
+
+
+
 @app.command()
-def webmap():
-    pass
+def webmap(port: int, vhost:str, subdomain_enum: bool, directory_enum: bool):
+    console.print("Info from passive crawling...")
+    passive_crawl(f"{vhost}:{port}")
+
 
 if __name__ == "__main__":
     app()
