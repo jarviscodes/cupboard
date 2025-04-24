@@ -75,13 +75,12 @@ def passive_crawl(host):
 
 @app.command()
 def webmap(port: int, vhost:str, subdomain_enum: bool, directory_enum: bool):
-    console.print("Info from passive crawling...")
     passive_crawl(f"{vhost}:{port}")
     if subdomain_enum or directory_enum:
         wordlist = []
         with open('/usr/share/seclists/Discovery/Web-Content/directory-list-lowercase-2.3-small.txt', 'r') as _wl:
             wordlist = [line for line in _wl.readlines() if not line.startswith("#")]
-
+        console.print("[bold cyan][underline]VHost enumeration:[/bold cyan][/underline]:")
         with requests.Session() as session:
             valid_subdomains = []
             for word in wordlist:
@@ -89,7 +88,7 @@ def webmap(port: int, vhost:str, subdomain_enum: bool, directory_enum: bool):
                 response = session.get(f"http://{vhost}")
                 if response.status_code == 200:
                     valid_subdomains.append(f"{word}.{vhost}")
-
+                    console.print(f"[bold green]{word}.{vhost}[/]")
 
 
 if __name__ == "__main__":
