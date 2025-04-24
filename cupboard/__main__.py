@@ -52,8 +52,8 @@ def inithost(boxname: str, ip_address: str):
 
 def passive_crawl(host):
     with requests.Session() as session:
-        resp_robot = session.get(host + "/robots.txt")
-        resp_git = session.get(host + "/.git")
+        resp_robot = session.get("http://" + host + "/robots.txt")
+        resp_git = session.get("http://" + host + "/.git")
         resp_webpage = session.get(host)
 
     if resp_robot.status_code == 200:
