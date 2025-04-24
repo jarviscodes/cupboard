@@ -1,3 +1,5 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 import requests
 import typer
 from rich.console import Console
@@ -73,6 +75,18 @@ def passive_crawl(host):
             console.print(link.get("href"))
 
 
+def check_subdomain(session, word, vhost):
+    session_headers = {"Host": f"{word}.{vhost}"}
+    try:
+        response = session.get(f"http://{vhost}/", allow_redirects=False)
+        if response.status_code == 200:
+            return f"{word}.{vhost}"
+        else:
+            return None
+    except requests.exceptions.RequestException:
+        return None
+
+
 
 @app.command()
 def webmap(port: int, vhost:str, subdomain_enum: bool, directory_enum: bool):
@@ -82,16 +96,18 @@ def webmap(port: int, vhost:str, subdomain_enum: bool, directory_enum: bool):
         with open('/usr/share/seclists/Discovery/Web-Content/directory-list-lowercase-2.3-small.txt', 'r') as _wl:
             wordlist = [line.strip() for line in _wl.readlines() if not line.startswith("#") and not len(line.strip()) == 0]
         console.print("[bold cyan][underline]VHost enumeration:[/bold cyan][/underline]")
+
+        valid_subdomains = []
         with requests.Session() as session:
-            valid_subdomains = []
             twordlist = tqdm(wordlist)
-            for word in twordlist:
-                twordlist.set_description(f"Processing {word}")
-                session.headers = {"Host": f"{word}.{vhost}"}
-                response = session.get(f"http://{vhost}", allow_redirects=False)
-                if response.status_code == 200:
-                    valid_subdomains.append(f"{word}.{vhost}")
-                    console.print(f"[bold green]{word}.{vhost}[/]")
+            with ThreadPoolExecutor(max_workers=10) as executor:
+                future_to_word = {executor.submit(check_subdomain, session, word, vhost): word for word in wordlist}
+                for future in tqdm(as_completed(future_to_word), total=len(wordlist)):
+                    result = future.result()
+                    if result:
+                        valid_subdomains.append(result)
+                        console.print(f"[bold green]{result}[/]")
+
 
 
 if __name__ == "__main__":
