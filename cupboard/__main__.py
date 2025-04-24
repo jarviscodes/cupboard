@@ -76,7 +76,7 @@ def passive_crawl(host):
 
 
 def check_subdomain(session, word, vhost):
-    session_headers = {"Host": f"{word}.{vhost}"}
+    session.headers = {"Host": f"{word}.{vhost}"}
     try:
         response = session.get(f"http://{vhost}/", allow_redirects=False)
         if response.status_code == 200:
@@ -99,8 +99,7 @@ def webmap(port: int, vhost:str, subdomain_enum: bool, directory_enum: bool):
 
         valid_subdomains = []
         with requests.Session() as session:
-            twordlist = tqdm(wordlist)
-            with ThreadPoolExecutor(max_workers=10) as executor:
+            with ThreadPoolExecutor(max_workers=20) as executor:
                 future_to_word = {executor.submit(check_subdomain, session, word, vhost): word for word in wordlist}
                 for future in tqdm(as_completed(future_to_word), total=len(wordlist)):
                     result = future.result()
